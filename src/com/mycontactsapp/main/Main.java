@@ -1,9 +1,10 @@
 /*
- * UseCase 2: User Authentication, Login, Logout, SessionManagement
- * Authentication --> Basic, OAuth
- * Login and Logout are reciprocated by SessionManager
+ * UseCase 3: User Profile Management
+ * Update user fields
+ * Controlled Access to private fields
+ * Proper Validation before update
  * @author: developer
- * @version: 2
+ * @version: 3
  */
 
 package com.mycontactsapp.main;
@@ -14,11 +15,10 @@ import com.mycontactsapp.user.service.UserService;
 import java.util.Scanner;
 
 public class Main {
-
+	//Main method
     public static void main(String[] args) {
 
         Scanner scanner = new Scanner(System.in);
-
         boolean running = true;
 
         while (running) {
@@ -27,7 +27,7 @@ public class Main {
             System.out.println("1. Register");
             System.out.println("2. Login");
             System.out.println("3. Logout");
-            System.out.println("4. Check Current User");
+            System.out.println("4. Profile Management");
             System.out.println("5. Exit");
             System.out.print("Choose option: ");
 
@@ -49,7 +49,7 @@ public class Main {
                         break;
 
                     case 4:
-                        showCurrentUser();
+                        handleProfileManagement(scanner);
                         break;
 
                     case 5:
@@ -68,6 +68,7 @@ public class Main {
         scanner.close();
     }
 
+    // User Registration
     private static void handleRegistration(Scanner scanner) {
 
         System.out.print("Enter user type (FREE/PREMIUM): ");
@@ -87,6 +88,7 @@ public class Main {
         System.out.println("User registered successfully: " + user.getEmail());
     }
 
+    // User Login
     private static void handleLogin(Scanner scanner) {
 
         if (UserService.isLoggedIn()) {
@@ -112,6 +114,7 @@ public class Main {
         }
     }
 
+    // Handle Logout
     private static void handleLogout() {
 
         if (!UserService.isLoggedIn()) {
@@ -123,14 +126,60 @@ public class Main {
         System.out.println("Logged out successfully.");
     }
 
-    private static void showCurrentUser() {
+    // Profile Management
+    private static void handleProfileManagement(Scanner scanner) {
 
         if (!UserService.isLoggedIn()) {
-            System.out.println("No active session.");
+            System.out.println("Please login first.");
             return;
         }
 
-        User user = UserService.getCurrentUser();
-        System.out.println("Current user: " + user.getEmail());
+        boolean managing = true;
+
+        while (managing) {
+
+            System.out.println("\n---- Profile Management ----");
+            System.out.println("1. Update Name");
+            System.out.println("2. Change Password");
+            System.out.println("3. Back");
+            System.out.print("Choose option: ");
+
+            int choice = Integer.parseInt(scanner.nextLine());
+
+            User currentUser = UserService.getCurrentUser();
+
+            try {
+                switch (choice) {
+
+                    case 1:
+                        System.out.print("Enter new name: ");
+                        String newName = scanner.nextLine();
+                        currentUser.updateName(newName);
+                        System.out.println("Name updated successfully.");
+                        break;
+
+                    case 2:
+                        System.out.print("Enter current password: ");
+                        String oldPassword = scanner.nextLine();
+
+                        System.out.print("Enter new password: ");
+                        String newPassword = scanner.nextLine();
+
+                        currentUser.changePassword(oldPassword, newPassword);
+                        System.out.println("Password changed successfully.");
+                        break;
+
+                    case 3:
+                        managing = false;
+                        break;
+
+                    default:
+                        System.out.println("Invalid option.");
+                }
+
+            } catch (Exception e) {
+                System.out.println("Error: " + e.getMessage());
+            }
+        }
     }
 }
