@@ -1,21 +1,23 @@
 /*
- * UseCase 3: User Profile Management
- * Update user fields
+ * UseCase 4: Contact Creation
  * Controlled Access to private fields
- * Proper Validation before update
+ * Proper Validation before Contact Creation
  * @author: developer
- * @version: 3
+ * @version: 4
  */
 
 package com.mycontactsapp.main;
 
 import com.mycontactsapp.user.model.User;
 import com.mycontactsapp.user.service.UserService;
+import com.mycontactsapp.contact.model.Contact;
+import com.mycontactsapp.contact.model.Person;
+import com.mycontactsapp.contact.model.Organization;
 
 import java.util.Scanner;
 
 public class Main {
-	//Main method
+
     public static void main(String[] args) {
 
         Scanner scanner = new Scanner(System.in);
@@ -28,7 +30,8 @@ public class Main {
             System.out.println("2. Login");
             System.out.println("3. Logout");
             System.out.println("4. Profile Management");
-            System.out.println("5. Exit");
+            System.out.println("5. Add Contact");
+            System.out.println("6. Exit");
             System.out.print("Choose option: ");
 
             int choice = Integer.parseInt(scanner.nextLine());
@@ -53,6 +56,10 @@ public class Main {
                         break;
 
                     case 5:
+                        handleAddContact(scanner);
+                        break;
+
+                    case 6:
                         running = false;
                         break;
 
@@ -68,7 +75,8 @@ public class Main {
         scanner.close();
     }
 
-    // User Registration
+    // Registration
+
     private static void handleRegistration(Scanner scanner) {
 
         System.out.print("Enter user type (FREE/PREMIUM): ");
@@ -88,7 +96,8 @@ public class Main {
         System.out.println("User registered successfully: " + user.getEmail());
     }
 
-    // User Login
+    // Login
+
     private static void handleLogin(Scanner scanner) {
 
         if (UserService.isLoggedIn()) {
@@ -114,7 +123,8 @@ public class Main {
         }
     }
 
-    // Handle Logout
+    // Logout
+
     private static void handleLogout() {
 
         if (!UserService.isLoggedIn()) {
@@ -127,6 +137,7 @@ public class Main {
     }
 
     // Profile Management
+
     private static void handleProfileManagement(Scanner scanner) {
 
         if (!UserService.isLoggedIn()) {
@@ -181,5 +192,43 @@ public class Main {
                 System.out.println("Error: " + e.getMessage());
             }
         }
+    }
+
+    // Add Contact
+
+    private static void handleAddContact(Scanner scanner) {
+
+        if (!UserService.isLoggedIn()) {
+            System.out.println("Please login first.");
+            return;
+        }
+
+        System.out.print("Enter contact type (PERSON/ORGANIZATION): ");
+        String type = scanner.nextLine();
+
+        System.out.print("Enter name: ");
+        String name = scanner.nextLine();
+
+        System.out.print("Enter phone: ");
+        String phone = scanner.nextLine();
+
+        System.out.print("Enter email: ");
+        String email = scanner.nextLine();
+
+        Contact contact;
+
+        if (type.equalsIgnoreCase("PERSON")) {
+            contact = new Person(name, phone, email);
+        }
+        else if (type.equalsIgnoreCase("ORGANIZATION")) {
+            contact = new Organization(name, phone, email);
+        }
+        else {
+            throw new IllegalArgumentException("Invalid contact type");
+        }
+
+        UserService.addContact(contact);
+
+        System.out.println("Contact added successfully!");
     }
 }

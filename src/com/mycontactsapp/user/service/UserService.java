@@ -6,6 +6,7 @@ import com.mycontactsapp.user.model.*;
 import com.mycontactsapp.user.profile.ProfileManagement;
 import com.mycontactsapp.user.session.SessionManager;
 import com.mycontactsapp.user.validation.*;
+import com.mycontactsapp.contact.model.*;
 import java.util.Map;
 
 import java.util.HashMap;
@@ -72,6 +73,14 @@ public class UserService {
 	
 	public static void changePassword(String oldPassword, String newPassword) {
 		ProfileManagement.changePassword(getCurrentUser(), oldPassword, newPassword);
+	}
+	
+	// Contact Management
+	
+	public static void addContact(Contact contact) {
+		if(!session.isActive()) throw new IllegalStateException("Login to add contacts");
+		User currentUser = session.getCurrentUser();
+		currentUser.addContact(contact);
 	}
 	
 }

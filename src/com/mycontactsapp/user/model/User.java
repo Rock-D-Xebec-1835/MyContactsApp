@@ -2,6 +2,9 @@ package com.mycontactsapp.user.model;
 
 import com.mycontactsapp.user.service.PasswordHasher;
 import com.mycontactsapp.user.validation.PasswordValidator;
+import com.mycontactsapp.contact.model.*;
+import java.util.List;
+import java.util.ArrayList;
 
 public abstract class User {
 	// Identity is immutable after creation
@@ -10,6 +13,8 @@ public abstract class User {
 	private String hashedPassword;
 	// Profile info
 	private String name;
+	
+	private final List<Contact> contacts = new ArrayList<>();
 	
 	protected User(String email, String hashedPassword, String name){
 		if(email == null) throw new IllegalArgumentException("Email cannot be null");
@@ -44,5 +49,19 @@ public abstract class User {
 		if(!oldHash.equals(this.getHashedPassword())) throw new IllegalArgumentException("Current Password doesn't match");
 		PasswordValidator.validatePassword(newPassword);
 		this.hashedPassword = PasswordHasher.hash(newPassword);
+	}
+	
+	public void addContact(Contact contact) {
+		if(contact == null) throw new IllegalArgumentException("Contact cannot be null");
+		for (Contact existing : contacts) {
+		    if (existing.getPhone().equals(contact.getPhone())) {
+		        throw new IllegalArgumentException("Contact with this number already exists");
+		    }
+		}
+		this.contacts.add(contact);
+	}
+	
+	public List<Contact> getContacts(){
+		return List.copyOf(contacts);
 	}
 }
