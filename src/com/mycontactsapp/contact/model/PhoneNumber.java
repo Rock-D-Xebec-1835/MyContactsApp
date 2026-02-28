@@ -8,6 +8,11 @@ public class PhoneNumber {
 		this.number = number;
 		this.type = type;
 	}
+	
+	public PhoneNumber(PhoneNumber other) {
+		this.number = other.number;
+		this.type = other.type;
+	}
 
 	public String getNumber() {
 		return number;

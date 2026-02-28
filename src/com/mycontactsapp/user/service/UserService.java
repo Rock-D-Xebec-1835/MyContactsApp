@@ -89,4 +89,30 @@ public class UserService {
 		return currentUser.getContactById(contactId);
 	}
 	
+	public static void editContact(String id, String newName, String newPhone, String newEmail) {
+		if(!session.isActive()) throw new IllegalStateException("Log in to edit contact");
+		User currentUser = session.getCurrentUser();
+		Contact original = currentUser.getContactById(id);
+		if(original == null) throw new IllegalArgumentException("Contact not found");
+		// Create a deep copy
+		Contact updated;
+		if(original instanceof Person) {
+			updated = new Person((Person) original);
+		}
+		else {
+			updated = new Organization((Organization) original);
+		}
+		// Apply changes if not null
+		if(newName != null && !newName.isBlank()) {
+			updated.updateName(newName);
+		}
+		if(newPhone != null && !newPhone.isBlank()) {
+			updated.updateName(newPhone);
+		}
+		if(newEmail != null && !newEmail.isBlank()) {
+			updated.updateName(newEmail);
+		}
+		currentUser.replaceContact(updated);
+	}
+	
 }

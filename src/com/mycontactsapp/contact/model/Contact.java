@@ -17,6 +17,14 @@ public abstract class Contact {
 		this.createdAt = LocalDateTime.now();
 	}
 	
+	protected Contact(Contact other) {
+		this.id = other.id;
+		this.name = other.name;
+		this.phone = other.phone;
+		this.email = other.email;
+		this.createdAt = other.createdAt;
+	}
+	
 	public String getId() {
 		return this.id.toString();
 	}
@@ -47,5 +55,18 @@ public abstract class Contact {
 	           "\nPhone: " + phone.getNumber() +
 	           "\nEmail: " + email.getEmail() +
 	           "\nCreated At: " + createdAt;
+	}
+	
+	public void updateName(String newName) {
+		if(newName == null || newName.isBlank()) throw new IllegalArgumentException("Contact cannot be null");
+		this.name = newName;
+	}
+	
+	public void updatePhone(String newPhone) {
+		 this.phone = new PhoneNumber(newPhone, getType());
+	}
+	
+	public void updateEmail(String newEmail) {
+		this.email = new Email(newEmail, getType());
 	}
 }

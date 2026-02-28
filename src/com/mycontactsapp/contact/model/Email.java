@@ -8,7 +8,12 @@ public class Email {
 		this.email = email;
 		this.type = type;
 	}
-
+	
+	public Email(Email other) {
+		this.email = other.email;
+		this.type = other.type;
+	}
+	
 	public String getEmail() {
 		return email;
 	}

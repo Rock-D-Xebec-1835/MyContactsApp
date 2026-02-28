@@ -5,6 +5,14 @@ public class Person extends Contact {
 		super(name, phone, email, "PERSON");
 	}
 	
+	
+	
+	public Person(Person other) {
+		super(other);
+	}
+
+
+
 	@Override
 	public String getType() {
 		return "PERSON";

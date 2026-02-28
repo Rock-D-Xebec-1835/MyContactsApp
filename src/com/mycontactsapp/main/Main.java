@@ -1,9 +1,9 @@
 /*
- * UseCase 5: Contact View
+ * UseCase 6: Edit Contact
  * Controlled Access to private fields
- * Proper Validation before Contact View
+ * Proper Validation before Contact Edit
  * @author: developer
- * @version: 5
+ * @version: 6
  */
 
 package com.mycontactsapp.main;
@@ -32,7 +32,8 @@ public class Main {
             System.out.println("4. Profile Management");
             System.out.println("5. Add Contact");
             System.out.println("6. View Contact");
-            System.out.println("7. Exit");
+            System.out.println("7. Edit Contact");
+            System.out.println("8. Exit");
             System.out.print("Choose option: ");
 
             int choice = Integer.parseInt(scanner.nextLine());
@@ -63,8 +64,12 @@ public class Main {
                     case 6:
                     	handleViewContact(scanner);
                     	break;
-
+                    	
                     case 7:
+                    	handleEditContact(scanner);
+                    	break;
+
+                    case 8:
                         running = false;
                         break;
 
@@ -269,4 +274,77 @@ public class Main {
             System.out.println("Contact not found.");
         }
     }
+    
+    // Edit Contact
+
+    private static void handleEditContact(Scanner scanner) {
+
+        if (!UserService.isLoggedIn()) {
+            System.out.println("Please login first.");
+            return;
+        }
+
+        User currentUser = UserService.getCurrentUser();
+
+        if (currentUser.getContacts().isEmpty()) {
+            System.out.println("No contacts available.");
+            return;
+        }
+
+        System.out.println("\n--- Your Contacts ---");
+
+        for (Contact contact : currentUser.getContacts()) {
+            System.out.println("ID: " + contact.getId() + " | Name: " + contact.getName());
+        }
+
+        System.out.print("\nEnter Contact ID to edit: ");
+        String id = scanner.nextLine();
+
+        Contact contact = UserService.viewContact(id);
+
+        if (contact == null) {
+            System.out.println("Contact not found.");
+            return;
+        }
+
+        System.out.println("\nWhat would you like to update?");
+        System.out.println("1. Name");
+        System.out.println("2. Phone");
+        System.out.println("3. Email");
+        System.out.print("Choose option: ");
+
+        int option = Integer.parseInt(scanner.nextLine());
+
+        String newName = null;
+        String newPhone = null;
+        String newEmail = null;
+
+        switch (option) {
+
+            case 1:
+                System.out.print("Enter new name: ");
+                newName = scanner.nextLine();
+                break;
+
+            case 2:
+                System.out.print("Enter new phone: ");
+                newPhone = scanner.nextLine();
+                break;
+
+            case 3:
+                System.out.print("Enter new email: ");
+                newEmail = scanner.nextLine();
+                break;
+
+            default:
+                System.out.println("Invalid option.");
+                return;
+        }
+
+        UserService.editContact(id, newName, newPhone, newEmail);
+
+        System.out.println("Contact updated successfully!");
+    }
+
+
 }

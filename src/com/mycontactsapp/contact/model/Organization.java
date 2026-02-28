@@ -5,6 +5,10 @@ public class Organization extends Contact {
 		super(name, phone, email, "ORGANIZATION");
 	}
 	
+	public Organization(Organization other) {
+		super(other);
+	}
+	
 	@Override
 	public String getType() {
 		return "ORGANIZATION";

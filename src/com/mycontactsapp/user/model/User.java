@@ -71,4 +71,14 @@ public abstract class User {
 		}
 		return null;
 	}
+	
+	public void replaceContact(Contact updatedContact) {
+		for(int i = 0; i < contacts.size(); i++) {
+			if(contacts.get(i).getId().equals(updatedContact.getId())) {
+				contacts.set(i, updatedContact);
+				return;
+			}
+		}
+		throw new IllegalArgumentException("Contact not found");
+	}
 }
