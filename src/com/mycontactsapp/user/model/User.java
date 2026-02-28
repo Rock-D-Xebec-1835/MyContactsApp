@@ -64,4 +64,11 @@ public abstract class User {
 	public List<Contact> getContacts(){
 		return List.copyOf(contacts);
 	}
+	
+	public Contact getContactById(String id) {
+		for(Contact contact : contacts) {
+			if(contact.getId().equals(id)) return contact;
+		}
+		return null;
+	}
 }

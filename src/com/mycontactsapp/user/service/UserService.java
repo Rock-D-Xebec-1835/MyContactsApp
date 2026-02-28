@@ -83,4 +83,10 @@ public class UserService {
 		currentUser.addContact(contact);
 	}
 	
+	public static Contact viewContact(String contactId) {
+		if(!session.isActive()) throw new IllegalStateException("Login to view Contact");
+		User currentUser = session.getCurrentUser();
+		return currentUser.getContactById(contactId);
+	}
+	
 }

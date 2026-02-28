@@ -39,4 +39,13 @@ public abstract class Contact {
 	
 	public abstract String getType();
 	
+	@Override
+	public String toString() {
+	    return "Contact ID: " + id +
+	           "\nType: " + getType() +
+	           "\nName: " + name +
+	           "\nPhone: " + phone.getNumber() +
+	           "\nEmail: " + email.getEmail() +
+	           "\nCreated At: " + createdAt;
+	}
 }

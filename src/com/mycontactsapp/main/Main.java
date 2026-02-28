@@ -1,9 +1,9 @@
 /*
- * UseCase 4: Contact Creation
+ * UseCase 5: Contact View
  * Controlled Access to private fields
- * Proper Validation before Contact Creation
+ * Proper Validation before Contact View
  * @author: developer
- * @version: 4
+ * @version: 5
  */
 
 package com.mycontactsapp.main;
@@ -31,7 +31,8 @@ public class Main {
             System.out.println("3. Logout");
             System.out.println("4. Profile Management");
             System.out.println("5. Add Contact");
-            System.out.println("6. Exit");
+            System.out.println("6. View Contact");
+            System.out.println("7. Exit");
             System.out.print("Choose option: ");
 
             int choice = Integer.parseInt(scanner.nextLine());
@@ -58,8 +59,12 @@ public class Main {
                     case 5:
                         handleAddContact(scanner);
                         break;
-
+                        
                     case 6:
+                    	handleViewContact(scanner);
+                    	break;
+
+                    case 7:
                         running = false;
                         break;
 
@@ -230,5 +235,38 @@ public class Main {
         UserService.addContact(contact);
 
         System.out.println("Contact added successfully!");
+    }
+    
+    private static void handleViewContact(Scanner scanner) {
+
+        if (!UserService.isLoggedIn()) {
+            System.out.println("Please login first.");
+            return;
+        }
+
+        User currentUser = UserService.getCurrentUser();
+
+        if (currentUser.getContacts().isEmpty()) {
+            System.out.println("No contacts available.");
+            return;
+        }
+
+        System.out.println("\n--- Your Contacts ---");
+
+        for (Contact contact : currentUser.getContacts()) {
+            System.out.println("ID: " + contact.getId() + " | Name: " + contact.getName());
+        }
+
+        System.out.print("\nEnter Contact ID to view details: ");
+        String id = scanner.nextLine();
+
+        Contact contact = UserService.viewContact(id);
+
+        if (contact != null) {
+            System.out.println("\n--- Contact Details ---");
+            System.out.println(contact); // calls toString()
+        } else {
+            System.out.println("Contact not found.");
+        }
     }
 }
