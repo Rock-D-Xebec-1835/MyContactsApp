@@ -115,4 +115,15 @@ public class UserService {
 		currentUser.replaceContact(updated);
 	}
 	
+	public static void softDeleteContact(String id) {
+		if(!session.isActive()) throw new IllegalStateException("Log in to delete contact");
+		User currentUser = session.getCurrentUser();
+		currentUser.softDeleteContact(id);
+	}
+	
+	public static void hardDeleteContact(String id) {
+		if(!session.isActive()) throw new IllegalStateException("Log in to delete contact");
+		User currentUser = session.getCurrentUser();
+		currentUser.hardDeleteContact(id);
+	}
 }

@@ -8,6 +8,7 @@ public abstract class Contact {
 	public PhoneNumber phone;
 	public Email email;
 	private final LocalDateTime createdAt;
+	private boolean deleted = false;
 	
 	public Contact(String name, String phone, String email, String type) {
 		this.id = UUID.randomUUID();
@@ -68,5 +69,13 @@ public abstract class Contact {
 	
 	public void updateEmail(String newEmail) {
 		this.email = new Email(newEmail, getType());
+	}
+	
+	public void markDeleted() {
+		this.deleted = true;
+	}
+	
+	public boolean isDeleted() {
+		return deleted;
 	}
 }

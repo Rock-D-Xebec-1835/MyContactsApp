@@ -62,7 +62,11 @@ public abstract class User {
 	}
 	
 	public List<Contact> getContacts(){
-		return List.copyOf(contacts);
+		List<Contact> activeContacts = new ArrayList<>();
+		for(Contact contact : contacts) {
+			if(!contact.isDeleted()) activeContacts.add(contact);
+		}
+		return activeContacts;
 	}
 	
 	public Contact getContactById(String id) {
@@ -80,5 +84,24 @@ public abstract class User {
 			}
 		}
 		throw new IllegalArgumentException("Contact not found");
+	}
+	
+	public void softDeleteContact(String id) {
+		Contact contact = getContactById(id);
+		if(contact == null) throw new IllegalArgumentException("Contact not found");
+		contact.markDeleted();
+	}
+	
+	public void hardDeleteContact(String id) {
+		Contact toRemove = null;
+		for(Contact contact : contacts) {
+			if(contact.getId().equals(id)) {
+				toRemove = contact;
+				break;
+			}
+		}
+		
+		if(toRemove == null) throw new IllegalArgumentException("Contact not found");
+		contacts.remove(toRemove);
 	}
 }

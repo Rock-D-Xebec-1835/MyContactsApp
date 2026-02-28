@@ -1,9 +1,9 @@
 /*
- * UseCase 6: Edit Contact
+ * UseCase 7: Delete Contact
  * Controlled Access to private fields
- * Proper Validation before Contact Edit
+ * Proper Validation before Contact Delete
  * @author: developer
- * @version: 6
+ * @version: 7
  */
 
 package com.mycontactsapp.main;
@@ -33,7 +33,8 @@ public class Main {
             System.out.println("5. Add Contact");
             System.out.println("6. View Contact");
             System.out.println("7. Edit Contact");
-            System.out.println("8. Exit");
+            System.out.println("8. Delete Contact");
+            System.out.println("9. Exit");
             System.out.print("Choose option: ");
 
             int choice = Integer.parseInt(scanner.nextLine());
@@ -70,6 +71,10 @@ public class Main {
                     	break;
 
                     case 8:
+                    	handleDeleteContact(scanner);
+                    	break;
+                    	
+                    case 9:
                         running = false;
                         break;
 
@@ -346,5 +351,60 @@ public class Main {
         System.out.println("Contact updated successfully!");
     }
 
+    // Handle Delete
+    private static void handleDeleteContact(Scanner scanner) {
+
+        if (!UserService.isLoggedIn()) {
+            System.out.println("Please login first.");
+            return;
+        }
+
+        User currentUser = UserService.getCurrentUser();
+
+        if (currentUser.getContacts().isEmpty()) {
+            System.out.println("No contacts available.");
+            return;
+        }
+
+        System.out.println("\n--- Your Contacts ---");
+
+        for (Contact contact : currentUser.getContacts()) {
+            System.out.println("ID: " + contact.getId() + " | Name: " + contact.getName());
+        }
+
+        System.out.print("\nEnter Contact ID to delete: ");
+        String id = scanner.nextLine();
+
+        System.out.println("\n1. Soft Delete");
+        System.out.println("2. Permanent Delete");
+        System.out.print("Choose option: ");
+
+        int option = Integer.parseInt(scanner.nextLine());
+
+        System.out.print("Are you sure? (YES/NO): ");
+        String confirm = scanner.nextLine();
+
+        if (!confirm.equalsIgnoreCase("YES")) {
+            System.out.println("Deletion cancelled.");
+            return;
+        }
+
+        try {
+            if (option == 1) {
+                UserService.softDeleteContact(id);
+                System.out.println("Contact soft deleted.");
+            } 
+            else if (option == 2) {
+                UserService.hardDeleteContact(id);
+                System.out.println("Contact permanently deleted.");
+            } 
+            else {
+                System.out.println("Invalid option.");
+            }
+
+        } catch (Exception e) {
+            System.out.println("Error: " + e.getMessage());
+        }
+    }
 
 }
