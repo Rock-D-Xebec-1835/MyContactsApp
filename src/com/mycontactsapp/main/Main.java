@@ -1,9 +1,9 @@
 /*
- * UseCase 10: Advanced Filtering
+ * UseCase 12: Apply Tags to Contacts
  * Controlled Access to private fields
- * Proper Validation before Contact Filtering
+ * Proper Validation before Managing tags to contacts in bulk
  * @author: developer
- * @version: 10
+ * @version: 12
  */
 
 package com.mycontactsapp.main;
@@ -744,56 +744,97 @@ public class Main {
 	         int choice = Integer.parseInt(scanner.nextLine());
 	
 	         try {
-	
-	             switch (choice) {
-	
-	                 case 1 -> {
-	                     System.out.print("Enter tag name: ");
-	                     String tagName = scanner.nextLine();
-	                     UserService.createTag(tagName);
-	                     System.out.println("Tag created successfully.");
-	                 }
-	
-	                 case 2 -> {
-	                     displayContacts();
-	
-	                     System.out.print("Enter Contact ID: ");
-	                     String contactId = scanner.nextLine();
-	
-	                     System.out.print("Enter Tag Name: ");
-	                     String tagName = scanner.nextLine();
-	
-	                     UserService.assignTagToContact(contactId, tagName);
-	                     System.out.println("Tag assigned successfully.");
-	                 }
-	
-	                 case 3 -> {
-	                     displayContacts();
-	
-	                     System.out.print("Enter Contact ID: ");
-	                     String contactId = scanner.nextLine();
-	
-	                     System.out.print("Enter Tag Name: ");
-	                     String tagName = scanner.nextLine();
-	
-	                     UserService.removeTagFromContact(contactId, tagName);
-	                     System.out.println("Tag removed successfully.");
-	                 }
-	
-	                 case 4 -> {
-	                     System.out.println("\n--- Your Tags ---");
-	                     UserService.getUserTags()
-	                             .forEach(System.out::println);
-	                 }
-	
-	                 case 5 -> managing = false;
-	
-	                 default -> System.out.println("Invalid option.");
-	             }
-	
-	         } catch (Exception e) {
-	             System.out.println("Error: " + e.getMessage());
-	         }
+
+	        	    switch (choice) {
+
+	        	      	// Create Tag
+	        	        case 1 -> {
+	        	            System.out.print("Enter tag name: ");
+	        	            String tagName = scanner.nextLine().trim();
+
+	        	            if (tagName.isBlank()) {
+	        	                System.out.println("Tag name cannot be empty.");
+	        	                break;
+	        	            }
+
+	        	            UserService.createTag(tagName);
+	        	            System.out.println("Tag created successfully.");
+	        	        }
+
+	        	        // Assign Multiple Tags
+	        	        case 2 -> {
+
+	        	            displayContacts();
+
+	        	            System.out.print("Enter Contact ID: ");
+	        	            String contactId = scanner.nextLine().trim();
+
+	        	            System.out.print("Enter tag names (comma separated): ");
+	        	            String input = scanner.nextLine();
+
+	        	            List<String> tagNames =
+	        	                    Arrays.stream(input.split(","))
+	        	                          .map(String::trim)
+	        	                          .filter(s -> !s.isBlank())
+	        	                          .toList();
+
+	        	            if (tagNames.isEmpty()) {
+	        	                System.out.println("No valid tags entered.");
+	        	                break;
+	        	            }
+
+	        	            UserService.assignTagsToContact(contactId, tagNames);
+	        	            System.out.println("Tags assigned successfully.");
+	        	        }
+
+	        	        // Remove Multiple tags
+	        	        case 3 -> {
+
+	        	            displayContacts();
+
+	        	            System.out.print("Enter Contact ID: ");
+	        	            String contactId = scanner.nextLine().trim();
+
+	        	            System.out.print("Enter tag names to remove (comma separated): ");
+	        	            String input = scanner.nextLine();
+
+	        	            List<String> tagNames =
+	        	                    Arrays.stream(input.split(","))
+	        	                          .map(String::trim)
+	        	                          .filter(s -> !s.isBlank())
+	        	                          .toList();
+
+	        	            if (tagNames.isEmpty()) {
+	        	                System.out.println("No valid tags entered.");
+	        	                break;
+	        	            }
+
+	        	            UserService.removeTagsFromContact(contactId, tagNames);
+	        	            System.out.println("Tags removed successfully.");
+	        	        }
+
+	        	        // View all Tags
+	        	        case 4 -> {
+
+	        	            System.out.println("\n--- Your Tags ---");
+
+	        	            if (UserService.getUserTags().isEmpty()) {
+	        	                System.out.println("No tags created yet.");
+	        	            } else {
+	        	                UserService.getUserTags()
+	        	                        .forEach(System.out::println);
+	        	            }
+	        	        }
+
+	        	        // Back
+	        	        case 5 -> managing = false;
+
+	        	        default -> System.out.println("Invalid option.");
+	        	    }
+
+	        	} catch (Exception e) {
+	        	    System.out.println("Error: " + e.getMessage());
+	        	}
 	     }
 	 }
 	 

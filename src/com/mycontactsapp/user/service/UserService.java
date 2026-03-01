@@ -174,14 +174,14 @@ public class UserService {
 		session.getCurrentUser().createTag(tagName);
 	}
 	
-	public static void assignTagToContact(String contactId, String tagName) {
+	public static void assignTagsToContact(String contactId, List<String> tagNames) {
 		if(!session.isActive()) throw new IllegalStateException("Log in to assign a tag");
-		session.getCurrentUser().assignTagToContact(contactId, tagName);
+		session.getCurrentUser().assignTagsToContact(contactId, tagNames);
 	}
 	
-	public static void removeTagFromContact(String contactId, String tagName) {
+	public static void removeTagsFromContact(String contactId, List<String> tagNames) {
 		if(!session.isActive()) throw new IllegalStateException("Log in to assign a tag");
-		session.getCurrentUser().removeTagFromContact(contactId, tagName);
+		session.getCurrentUser().removeTagsFromContact(contactId, tagNames);
 	}
 	
 	public static Set<Tag> getUserTags(){
