@@ -1,9 +1,9 @@
 /*
- * UseCase 10: Advanced Filtering
+ * UseCase 11: Tag Creation and Management
  * Controlled Access to private fields
- * Proper Validation before Contact Filtering
+ * Proper Validation before Tag Creation
  * @author: developer
- * @version: 10
+ * @version: 11
  */
 
 package com.mycontactsapp.main;
