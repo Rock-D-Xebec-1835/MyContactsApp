@@ -8,10 +8,12 @@ import com.mycontactsapp.user.session.SessionManager;
 import com.mycontactsapp.user.validation.*;
 import com.mycontactsapp.contact.model.*;
 import com.mycontactsapp.contact.search.SearchCriteria;
+import com.mycontactsapp.contact.tag.*;
 
 import java.util.Map;
 import java.util.List;
 import java.util.Comparator;
+import java.util.Set;
 
 
 import java.util.HashMap;
@@ -164,5 +166,26 @@ public class UserService {
 	public static List<Contact> searchAndSort(SearchCriteria criteria, Comparator<Contact> comparator){
 		if(!session.isActive()) throw new IllegalStateException("Log in to filter contacts");
 		return session.getCurrentUser().searchAndSort(criteria, comparator);
+	}
+	
+	// Tag Management
+	public static void createTag(String tagName) {
+		if(!session.isActive()) throw new IllegalStateException("Log in to add a tag");
+		session.getCurrentUser().createTag(tagName);
+	}
+	
+	public static void assignTagToContact(String contactId, String tagName) {
+		if(!session.isActive()) throw new IllegalStateException("Log in to assign a tag");
+		session.getCurrentUser().assignTagToContact(contactId, tagName);
+	}
+	
+	public static void removeTagFromContact(String contactId, String tagName) {
+		if(!session.isActive()) throw new IllegalStateException("Log in to assign a tag");
+		session.getCurrentUser().removeTagFromContact(contactId, tagName);
+	}
+	
+	public static Set<Tag> getUserTags(){
+		if(!session.isActive()) throw new IllegalStateException("Log in to view tags");
+		return session.getCurrentUser().getUserTags();
 	}
 }

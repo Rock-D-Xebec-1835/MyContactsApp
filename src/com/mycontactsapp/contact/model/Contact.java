@@ -1,6 +1,10 @@
 package com.mycontactsapp.contact.model;
+import com.mycontactsapp.contact.tag.*;
 import java.time.LocalDateTime;
 import java.util.UUID;
+import java.util.Set;
+import java.util.HashSet;
+
 
 public abstract class Contact {
 	private final UUID id;
@@ -10,6 +14,7 @@ public abstract class Contact {
 	private final LocalDateTime createdAt;
 	private boolean deleted = false;
 	private int contactCount = 0;
+	private Set<Tag> tags = new HashSet<>();
 	
 	public Contact(String name, String phone, String email, String type) {
 		this.id = UUID.randomUUID();
@@ -86,5 +91,17 @@ public abstract class Contact {
 	
 	public int getContactCount() {
 		return this.contactCount;
+	}
+	
+	public void addTag(Tag tag) {
+		tags.add(tag);
+	}
+	
+	public void removeTag(Tag tag) {
+		tags.remove(tag);
+	}
+	
+	public Set<Tag> getTags(){
+		return Set.copyOf(tags); // Safe to return a copy of the set
 	}
 }

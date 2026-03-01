@@ -46,7 +46,8 @@ public class Main {
             System.out.println("9. Bulk Operations");
             System.out.println("10. Search Contacts");
             System.out.println("11. Filter Contacts");
-            System.out.println("12. Exit");
+            System.out.println("12. Manage Tags");
+            System.out.println("13. Exit");
             System.out.print("Choose option: ");
 
             int choice = Integer.parseInt(scanner.nextLine());
@@ -99,6 +100,10 @@ public class Main {
                     	break;
                     	
                     case 12:
+                    	handleTagManagement(scanner);
+                    	break;
+                    	
+                    case 13:
                         running = false;
                         break;
 
@@ -597,11 +602,12 @@ public class Main {
 
         while (adding) {
 
-            System.out.println("\nAdd Filter:");
-            System.out.println("1. Date Added (Range)");
-            System.out.println("2. Frequently Contacted");
-            System.out.println("3. Done");
-            System.out.print("Choose option: ");
+        	System.out.println("\nAdd Filter:");
+        	System.out.println("1. Date Added (Range)");
+        	System.out.println("2. Frequently Contacted");
+        	System.out.println("3. Tag");
+        	System.out.println("4. Done");
+        	System.out.print("Choose option: ");
 
             int option = Integer.parseInt(scanner.nextLine());
 
@@ -609,10 +615,10 @@ public class Main {
 
                 case 1 -> {
 
-                    System.out.print("Enter start date (yyyy-MM-dd) or leave blank: ");
+                    System.out.print("Enter start date (dd-MM-yyyy) or leave blank: ");
                     String startInput = scanner.nextLine();
 
-                    System.out.print("Enter end date (yyyy-MM-dd) or leave blank: ");
+                    System.out.print("Enter end date (dd-MM-yyyy) or leave blank: ");
                     String endInput = scanner.nextLine();
 
                     LocalDateTime after = null;
@@ -646,8 +652,25 @@ public class Main {
 
                     criteriaList.add(new FrequentlyContactedCriteria(threshold));
                 }
+                
+                case 3 -> {
 
-                case 3 -> adding = false;
+                    if (UserService.getUserTags().isEmpty()) {
+                        System.out.println("No tags created yet.");
+                        break;
+                    }
+
+                    System.out.println("\nAvailable Tags:");
+                    UserService.getUserTags()
+                            .forEach(System.out::println);
+
+                    System.out.print("Enter tag name: ");
+                    String tagName = scanner.nextLine();
+
+                    criteriaList.add(new TagCriteria(tagName));
+                }
+
+                case 4 -> adding = false;
 
                 default -> System.out.println("Invalid option.");
             }
@@ -695,4 +718,104 @@ public class Main {
             results.forEach(System.out::println);
         }
     }
+    
+    // Tag Management
+
+
+	 private static void handleTagManagement(Scanner scanner) {
+	
+	     if (!UserService.isLoggedIn()) {
+	         System.out.println("Please login first.");
+	         return;
+	     }
+	
+	     boolean managing = true;
+	
+	     while (managing) {
+	
+	         System.out.println("\n---- Tag Management ----");
+	         System.out.println("1. Create Tag");
+	         System.out.println("2. Assign Tag to Contact");
+	         System.out.println("3. Remove Tag from Contact");
+	         System.out.println("4. View All Tags");
+	         System.out.println("5. Back");
+	         System.out.print("Choose option: ");
+	
+	         int choice = Integer.parseInt(scanner.nextLine());
+	
+	         try {
+	
+	             switch (choice) {
+	
+	                 case 1 -> {
+	                     System.out.print("Enter tag name: ");
+	                     String tagName = scanner.nextLine();
+	                     UserService.createTag(tagName);
+	                     System.out.println("Tag created successfully.");
+	                 }
+	
+	                 case 2 -> {
+	                     displayContacts();
+	
+	                     System.out.print("Enter Contact ID: ");
+	                     String contactId = scanner.nextLine();
+	
+	                     System.out.print("Enter Tag Name: ");
+	                     String tagName = scanner.nextLine();
+	
+	                     UserService.assignTagToContact(contactId, tagName);
+	                     System.out.println("Tag assigned successfully.");
+	                 }
+	
+	                 case 3 -> {
+	                     displayContacts();
+	
+	                     System.out.print("Enter Contact ID: ");
+	                     String contactId = scanner.nextLine();
+	
+	                     System.out.print("Enter Tag Name: ");
+	                     String tagName = scanner.nextLine();
+	
+	                     UserService.removeTagFromContact(contactId, tagName);
+	                     System.out.println("Tag removed successfully.");
+	                 }
+	
+	                 case 4 -> {
+	                     System.out.println("\n--- Your Tags ---");
+	                     UserService.getUserTags()
+	                             .forEach(System.out::println);
+	                 }
+	
+	                 case 5 -> managing = false;
+	
+	                 default -> System.out.println("Invalid option.");
+	             }
+	
+	         } catch (Exception e) {
+	             System.out.println("Error: " + e.getMessage());
+	         }
+	     }
+	 }
+	 
+	 private static void displayContacts() {
+
+		    if (!UserService.isLoggedIn()) {
+		        System.out.println("Please login first.");
+		        return;
+		    }
+
+		    User currentUser = UserService.getCurrentUser();
+
+		    if (currentUser.getContacts().isEmpty()) {
+		        System.out.println("No contacts available.");
+		        return;
+		    }
+
+		    System.out.println("\n--- Your Contacts ---");
+
+		    for (Contact contact : currentUser.getContacts()) {
+		        System.out.println("ID: " + contact.getId()
+		                + " | Name: " + contact.getName());
+		    }
+		}
 }

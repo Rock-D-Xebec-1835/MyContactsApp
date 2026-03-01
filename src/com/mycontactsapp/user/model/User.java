@@ -4,10 +4,13 @@ import com.mycontactsapp.user.service.PasswordHasher;
 import com.mycontactsapp.user.validation.PasswordValidator;
 import com.mycontactsapp.contact.model.*;
 import com.mycontactsapp.contact.search.SearchCriteria;
+import com.mycontactsapp.contact.tag.*;
 
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashSet;
+import java.util.Set;
 
 public abstract class User {
 	// Identity is immutable after creation
@@ -18,6 +21,8 @@ public abstract class User {
 	private String name;
 	
 	private final List<Contact> contacts = new ArrayList<>();
+	
+	private Set<Tag> userTags = new HashSet<>();
 	
 	protected User(String email, String hashedPassword, String name){
 		if(email == null) throw new IllegalArgumentException("Email cannot be null");
@@ -146,4 +151,40 @@ public abstract class User {
 				.sorted(comparator)
 				.toList();
 	}
+	
+	// Tag Management
+	public Tag createTag(String name) {
+		Tag tag = new Tag(name);
+		userTags.add(tag);
+		return tag;
+	}
+	
+	public Set<Tag> getUserTags(){
+		return Set.copyOf(userTags);
+	}
+	
+	public void assignTagToContact(String contactId, String tagName) {
+		Contact contact = getContactById(contactId);
+		Tag tag = userTags.stream()
+				.filter(t -> t.getName().equals(tagName.toLowerCase()))
+				.findFirst()
+				.orElseThrow(() -> new IllegalArgumentException("Tag not found"));
+		contact.addTag(tag);
+	}
+	
+	public void removeTagFromContact(String contactId, String tagName) {
+		if(contactId == null || contactId.isBlank()) throw new IllegalArgumentException("Contact ID cannot be null");
+		if(tagName == null || tagName.isBlank()) throw new IllegalArgumentException("Tag Name cannot be null");
+		
+		Contact contact = getContactById(contactId);
+		Tag tag = userTags.stream()
+				.filter(t -> t.getName().equals(tagName.toLowerCase()))
+				.findFirst()
+				.orElseThrow(() -> new IllegalArgumentException("Tag doesnt exist"));
+		if(!contact.getTags().contains(tag)) {
+			throw new IllegalArgumentException("Tag is not assigned to this contact");
+		}
+		contact.removeTag(tag);
+	}
+	
 }
