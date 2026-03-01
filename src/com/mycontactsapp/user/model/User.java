@@ -104,4 +104,27 @@ public abstract class User {
 		if(toRemove == null) throw new IllegalArgumentException("Contact not found");
 		contacts.remove(toRemove);
 	}
+	
+	public List<Contact> getContactsByIds(List<String> ids){
+		return contacts.stream()
+				.filter(c -> ids.contains(c.getId()))
+				.filter(c -> !c.isDeleted())
+				.toList();
+	}
+	
+	public void softDeleteContacts(List<Contact> selected) {
+		selected.forEach(Contact::markDeleted);
+	}
+	
+	public void hardDeleteContacts(List<Contact> selected) {
+		contacts.removeAll(selected);
+	}
+	
+	public List<Contact> filterContactsByName(String text){
+		return contacts.stream()
+				.filter(c -> !c.isDeleted())
+				.filter(c -> c.getName().toLowerCase().contains(text.toLowerCase()))
+				.toList();
+	}
+	
 }

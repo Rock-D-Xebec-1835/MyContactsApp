@@ -15,6 +15,8 @@ import com.mycontactsapp.contact.model.Person;
 import com.mycontactsapp.contact.model.Organization;
 
 import java.util.Scanner;
+import java.util.List;
+import java.util.Arrays;
 
 public class Main {
 
@@ -34,7 +36,8 @@ public class Main {
             System.out.println("6. View Contact");
             System.out.println("7. Edit Contact");
             System.out.println("8. Delete Contact");
-            System.out.println("9. Exit");
+            System.out.println("9. Bulk Operations");
+            System.out.println("10. Exit");
             System.out.print("Choose option: ");
 
             int choice = Integer.parseInt(scanner.nextLine());
@@ -75,6 +78,10 @@ public class Main {
                     	break;
                     	
                     case 9:
+                    	handleBulkOperations(scanner);
+                    	break;
+                    	
+                    case 10:
                         running = false;
                         break;
 
@@ -400,6 +407,76 @@ public class Main {
             } 
             else {
                 System.out.println("Invalid option.");
+            }
+
+        } catch (Exception e) {
+            System.out.println("Error: " + e.getMessage());
+        }
+    }
+    
+ // Bulk Operations
+
+    private static void handleBulkOperations(Scanner scanner) {
+
+        if (!UserService.isLoggedIn()) {
+            System.out.println("Please login first.");
+            return;
+        }
+
+        User currentUser = UserService.getCurrentUser();
+
+        if (currentUser.getContacts().isEmpty()) {
+            System.out.println("No contacts available.");
+            return;
+        }
+
+        System.out.println("\n--- Your Contacts ---");
+
+        for (Contact contact : currentUser.getContacts()) {
+            System.out.println("ID: " + contact.getId() + " | Name: " + contact.getName());
+        }
+
+        System.out.print("\nEnter Contact IDs (comma separated): ");
+        String input = scanner.nextLine();
+
+        List<String> ids = Arrays.stream(input.split(","))
+                .map(String::trim)
+                .toList();
+
+        System.out.println("\nChoose Bulk Operation:");
+        System.out.println("1. Soft Delete");
+        System.out.println("2. Permanent Delete");
+        System.out.println("3. Export");
+        System.out.print("Choose option: ");
+
+        int option = Integer.parseInt(scanner.nextLine());
+
+        try {
+
+            switch (option) {
+
+                case 1 -> {
+                    UserService.bulkSoftDelete(ids);
+                    System.out.println("Selected contacts soft deleted.");
+                }
+
+                case 2 -> {
+                    UserService.bulkHardDelete(ids);
+                    System.out.println("Selected contacts permanently deleted.");
+                }
+
+                case 3 -> {
+                    List<Contact> exported = UserService.bulkExport(ids);
+
+                    if (exported.isEmpty()) {
+                        System.out.println("No matching contacts.");
+                    } else {
+                        System.out.println("\n--- Exported Contacts ---");
+                        exported.forEach(System.out::println);
+                    }
+                }
+
+                default -> System.out.println("Invalid option.");
             }
 
         } catch (Exception e) {

@@ -8,6 +8,8 @@ import com.mycontactsapp.user.session.SessionManager;
 import com.mycontactsapp.user.validation.*;
 import com.mycontactsapp.contact.model.*;
 import java.util.Map;
+import java.util.List;
+
 
 import java.util.HashMap;
 // Service Layer
@@ -126,4 +128,25 @@ public class UserService {
 		User currentUser = session.getCurrentUser();
 		currentUser.hardDeleteContact(id);
 	}
+	
+	public static void bulkSoftDelete(List<String> ids) {
+		if(!session.isActive()) throw new IllegalStateException("Login to bulk delete contacts");
+		User user = session.getCurrentUser();
+		List<Contact> selected = user.getContactsByIds(ids);
+		user.softDeleteContacts(selected);
+	}
+	
+	public static void bulkHardDelete(List<String> ids) {
+		if(!session.isActive()) throw new IllegalStateException("Login to bulk delete contacts");
+		User user = session.getCurrentUser();
+		List<Contact> selected = user.getContactsByIds(ids);
+		user.hardDeleteContacts(selected);
+	}
+	
+	public static List<Contact> bulkExport(List<String> ids){
+		if(!session.isActive()) throw new IllegalStateException("Login to bulk export contacts");
+		User user = session.getCurrentUser();
+		return user.getContactsByIds(ids);
+	}
+	
 }
