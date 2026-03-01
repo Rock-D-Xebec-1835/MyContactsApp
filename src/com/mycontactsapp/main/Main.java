@@ -13,10 +13,12 @@ import com.mycontactsapp.user.service.UserService;
 import com.mycontactsapp.contact.model.Contact;
 import com.mycontactsapp.contact.model.Person;
 import com.mycontactsapp.contact.model.Organization;
+import com.mycontactsapp.contact.search.*;
 
 import java.util.Scanner;
 import java.util.List;
 import java.util.Arrays;
+import java.util.ArrayList;
 
 public class Main {
 
@@ -37,7 +39,8 @@ public class Main {
             System.out.println("7. Edit Contact");
             System.out.println("8. Delete Contact");
             System.out.println("9. Bulk Operations");
-            System.out.println("10. Exit");
+            System.out.println("10. Search Contacts");
+            System.out.println("11. Exit");
             System.out.print("Choose option: ");
 
             int choice = Integer.parseInt(scanner.nextLine());
@@ -82,6 +85,10 @@ public class Main {
                     	break;
                     	
                     case 10:
+                    	handleSearchContacts(scanner);
+                    	break;
+                    	
+                    case 11:
                         running = false;
                         break;
 
@@ -483,5 +490,83 @@ public class Main {
             System.out.println("Error: " + e.getMessage());
         }
     }
+    
+    // Search Contacts
+    private static void handleSearchContacts(Scanner scanner) {
 
+        if (!UserService.isLoggedIn()) {
+            System.out.println("Please login first.");
+            return;
+        }
+
+        List<SearchCriteria> criteriaList = new ArrayList<>();
+
+        boolean adding = true;
+
+        while (adding) {
+
+            System.out.println("\nAdd Search Condition:");
+            System.out.println("1. Name");
+            System.out.println("2. Phone");
+            System.out.println("3. Email");
+            System.out.println("4. Done");
+            System.out.print("Choose option: ");
+
+            int option = Integer.parseInt(scanner.nextLine());
+
+            switch (option) {
+
+                case 1 -> {
+                    System.out.print("Enter name keyword: ");
+                    criteriaList.add(new NameCriteria(scanner.nextLine()));
+                }
+
+                case 2 -> {
+                    System.out.print("Enter phone keyword: ");
+                    criteriaList.add(new PhoneCriteria(scanner.nextLine()));
+                }
+
+                case 3 -> {
+                    System.out.print("Enter email keyword: ");
+                    criteriaList.add(new EmailCriteria(scanner.nextLine()));
+                }
+
+                case 4 -> adding = false;
+
+                default -> System.out.println("Invalid option.");
+            }
+        }
+
+        if (criteriaList.isEmpty()) {
+            System.out.println("No search conditions added.");
+            return;
+        }
+
+        System.out.println("\nCombine conditions using:");
+        System.out.println("1. AND");
+        System.out.println("2. OR");
+        System.out.print("Choose option: ");
+
+        int combineOption = Integer.parseInt(scanner.nextLine());
+
+        SearchCriteria finalCriteria;
+
+        if (combineOption == 1) {
+            finalCriteria = new AndCriteria(criteriaList);
+        } else if (combineOption == 2) {
+            finalCriteria = new OrCriteria(criteriaList);
+        } else {
+            System.out.println("Invalid combination option.");
+            return;
+        }
+
+        List<Contact> results = UserService.search(finalCriteria);
+
+        if (results.isEmpty()) {
+            System.out.println("No matching contacts found.");
+        } else {
+            System.out.println("\n--- Search Results ---");
+            results.forEach(System.out::println);
+        }
+    }
 }

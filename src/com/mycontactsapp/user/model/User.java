@@ -3,6 +3,8 @@ package com.mycontactsapp.user.model;
 import com.mycontactsapp.user.service.PasswordHasher;
 import com.mycontactsapp.user.validation.PasswordValidator;
 import com.mycontactsapp.contact.model.*;
+import com.mycontactsapp.contact.search.SearchCriteria;
+
 import java.util.List;
 import java.util.ArrayList;
 
@@ -124,6 +126,14 @@ public abstract class User {
 		return contacts.stream()
 				.filter(c -> !c.isDeleted())
 				.filter(c -> c.getName().toLowerCase().contains(text.toLowerCase()))
+				.toList();
+	}
+	// Search based on a criteria
+	public List<Contact> search(SearchCriteria criteria){
+		if(criteria == null) throw new IllegalArgumentException("Search criteria cannot be null");
+		return contacts.stream()
+				.filter(c -> !c.isDeleted()) // Ignore softDeleted contacts
+				.filter(criteria::matches)   // Apply dynamic rule
 				.toList();
 	}
 	

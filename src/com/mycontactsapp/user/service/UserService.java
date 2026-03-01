@@ -7,6 +7,8 @@ import com.mycontactsapp.user.profile.ProfileManagement;
 import com.mycontactsapp.user.session.SessionManager;
 import com.mycontactsapp.user.validation.*;
 import com.mycontactsapp.contact.model.*;
+import com.mycontactsapp.contact.search.SearchCriteria;
+
 import java.util.Map;
 import java.util.List;
 
@@ -149,4 +151,11 @@ public class UserService {
 		return user.getContactsByIds(ids);
 	}
 	
+	// Search and filter based on criteria
+	public static List<Contact> search(SearchCriteria criteria){
+		if(!session.isActive()) throw new IllegalStateException("Login to search contacts");
+		User user = session.getCurrentUser();
+		if(criteria == null) throw new IllegalArgumentException("Search criteria cannot be null");
+		return user.search(criteria);
+	}
 }
