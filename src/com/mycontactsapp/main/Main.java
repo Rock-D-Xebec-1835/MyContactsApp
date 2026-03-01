@@ -1,9 +1,9 @@
 /*
- * UseCase 7: Delete Contact
+ * UseCase 10: Advanced Filtering
  * Controlled Access to private fields
- * Proper Validation before Contact Delete
+ * Proper Validation before Contact Filtering
  * @author: developer
- * @version: 7
+ * @version: 10
  */
 
 package com.mycontactsapp.main;
@@ -19,6 +19,11 @@ import java.util.Scanner;
 import java.util.List;
 import java.util.Arrays;
 import java.util.ArrayList;
+import java.util.Comparator;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 
 public class Main {
 
@@ -40,7 +45,8 @@ public class Main {
             System.out.println("8. Delete Contact");
             System.out.println("9. Bulk Operations");
             System.out.println("10. Search Contacts");
-            System.out.println("11. Exit");
+            System.out.println("11. Filter Contacts");
+            System.out.println("12. Exit");
             System.out.print("Choose option: ");
 
             int choice = Integer.parseInt(scanner.nextLine());
@@ -89,6 +95,10 @@ public class Main {
                     	break;
                     	
                     case 11:
+                    	handleAdvancedFiltering(scanner);
+                    	break;
+                    	
+                    case 12:
                         running = false;
                         break;
 
@@ -566,6 +576,122 @@ public class Main {
             System.out.println("No matching contacts found.");
         } else {
             System.out.println("\n--- Search Results ---");
+            results.forEach(System.out::println);
+        }
+    }
+    
+ // Advanced Filtering (UC-10)
+
+    private static void handleAdvancedFiltering(Scanner scanner) {
+
+        if (!UserService.isLoggedIn()) {
+            System.out.println("Please login first.");
+            return;
+        }
+        
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+
+        List<SearchCriteria> criteriaList = new ArrayList<>();
+
+        boolean adding = true;
+
+        while (adding) {
+
+            System.out.println("\nAdd Filter:");
+            System.out.println("1. Date Added (Range)");
+            System.out.println("2. Frequently Contacted");
+            System.out.println("3. Done");
+            System.out.print("Choose option: ");
+
+            int option = Integer.parseInt(scanner.nextLine());
+
+            switch (option) {
+
+                case 1 -> {
+
+                    System.out.print("Enter start date (yyyy-MM-dd) or leave blank: ");
+                    String startInput = scanner.nextLine();
+
+                    System.out.print("Enter end date (yyyy-MM-dd) or leave blank: ");
+                    String endInput = scanner.nextLine();
+
+                    LocalDateTime after = null;
+                    LocalDateTime before = null;
+
+                    if (!startInput.isBlank()) {
+                    	try {
+                            after = LocalDate.parse(startInput, formatter).atStartOfDay();
+                    	}
+                    	catch(DateTimeParseException e) {
+                    		System.out.println("Invalid date format. Use dd-MM-yyyy");
+                    	}
+                    }
+
+                    if (!endInput.isBlank()) {
+                    	try {
+                    		before = LocalDate.parse(endInput, formatter).atTime(23, 59, 59);
+                    	}
+                    	catch(DateTimeParseException e) {
+                    		System.out.println("Invalid date format. Use dd-MM-yyyy");
+                    	}
+                    }
+
+                    criteriaList.add(new DateRangeCriteria(after, before));
+                }
+
+                case 2 -> {
+
+                    System.out.print("Enter minimum contact frequency: ");
+                    int threshold = Integer.parseInt(scanner.nextLine());
+
+                    criteriaList.add(new FrequentlyContactedCriteria(threshold));
+                }
+
+                case 3 -> adding = false;
+
+                default -> System.out.println("Invalid option.");
+            }
+        }
+
+        if (criteriaList.isEmpty()) {
+            System.out.println("No filters selected.");
+            return;
+        }
+
+        SearchCriteria finalCriteria =
+                new AndCriteria(criteriaList);
+
+        System.out.println("\nSort By:");
+        System.out.println("1. Name");
+        System.out.println("2. Date Added (Newest First)");
+        System.out.println("3. Frequency (Most Contacted First)");
+        System.out.print("Choose option: ");
+
+        int sortOption = Integer.parseInt(scanner.nextLine());
+
+        Comparator<Contact> comparator;
+
+        switch (sortOption) {
+
+            case 1 -> comparator = ContactComparators.byName;
+
+            case 2 -> comparator = ContactComparators.byDateDesc;
+
+            case 3 -> comparator = ContactComparators.byFrequency;
+
+            default -> {
+                System.out.println("Invalid sort option.");
+                return;
+            }
+        }
+
+        List<Contact> results =
+                UserService.searchAndSort(finalCriteria, comparator);
+
+        if (results.isEmpty()) {
+            System.out.println("No matching contacts found.");
+        } else {
+            System.out.println("\n--- Filtered Results ---");
             results.forEach(System.out::println);
         }
     }

@@ -11,6 +11,7 @@ import com.mycontactsapp.contact.search.SearchCriteria;
 
 import java.util.Map;
 import java.util.List;
+import java.util.Comparator;
 
 
 import java.util.HashMap;
@@ -157,5 +158,11 @@ public class UserService {
 		User user = session.getCurrentUser();
 		if(criteria == null) throw new IllegalArgumentException("Search criteria cannot be null");
 		return user.search(criteria);
+	}
+	
+	// Search and Sort
+	public static List<Contact> searchAndSort(SearchCriteria criteria, Comparator<Contact> comparator){
+		if(!session.isActive()) throw new IllegalStateException("Log in to filter contacts");
+		return session.getCurrentUser().searchAndSort(criteria, comparator);
 	}
 }

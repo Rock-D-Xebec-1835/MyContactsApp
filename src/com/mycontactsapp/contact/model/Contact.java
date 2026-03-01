@@ -9,6 +9,7 @@ public abstract class Contact {
 	public Email email;
 	private final LocalDateTime createdAt;
 	private boolean deleted = false;
+	private int contactCount = 0;
 	
 	public Contact(String name, String phone, String email, String type) {
 		this.id = UUID.randomUUID();
@@ -77,5 +78,13 @@ public abstract class Contact {
 	
 	public boolean isDeleted() {
 		return deleted;
+	}
+	
+	public void incrementContactCount() {
+		contactCount++;
+	}
+	
+	public int getContactCount() {
+		return this.contactCount;
 	}
 }

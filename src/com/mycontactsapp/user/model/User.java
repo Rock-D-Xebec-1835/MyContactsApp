@@ -7,6 +7,7 @@ import com.mycontactsapp.contact.search.SearchCriteria;
 
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Comparator;
 
 public abstract class User {
 	// Identity is immutable after creation
@@ -137,4 +138,12 @@ public abstract class User {
 				.toList();
 	}
 	
+	// Sorting support
+	public List<Contact> searchAndSort(SearchCriteria criteria, Comparator<Contact> comparator){
+		return contacts.stream()
+				.filter(c -> !c.isDeleted())
+				.filter(criteria::matches)
+				.sorted(comparator)
+				.toList();
+	}
 }
