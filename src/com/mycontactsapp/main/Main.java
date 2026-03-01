@@ -1,9 +1,9 @@
 /*
- * UseCase 7: Delete Contact
+ * UseCase 9: Search Contacts
  * Controlled Access to private fields
- * Proper Validation before Contact Delete
+ * Proper Validation before Searching Contacts
  * @author: developer
- * @version: 7
+ * @version: 9
  */
 
 package com.mycontactsapp.main;
