@@ -1,9 +1,9 @@
 /*
- * UseCase 7: Delete Contact
+ * UseCase 8: Bulk Operations
  * Controlled Access to private fields
- * Proper Validation before Contact Delete
+ * Proper Validation before Bulk Operations
  * @author: developer
- * @version: 7
+ * @version: 8
  */
 
 package com.mycontactsapp.main;
